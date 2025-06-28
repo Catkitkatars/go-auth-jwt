@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    volumes:
+      - ./logs:/auth-jwt/logs
+      - ./assets:/auth-jwt/assets
+    ports:
+      - "8085:8080"
+  database:
+    build:
+      context: .
+      dockerfile: docker/database/Dockerfile
+    ports:
+      - "5464:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: auth
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
