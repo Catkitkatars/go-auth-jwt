@@ -13,11 +13,13 @@ const (
 	EnvProd  = "prod"
 )
 
-func Init(cfg *config.Config) (*slog.Logger, error) {
+var Logger *slog.Logger
+
+func Init(cfg *config.Config) error {
 	logFile, err := os.OpenFile(cfg.AppLogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	logWriter := io.MultiWriter(os.Stdout, logFile)
@@ -32,5 +34,7 @@ func Init(cfg *config.Config) (*slog.Logger, error) {
 		slogHandler = slog.NewJSONHandler(logWriter, &slog.HandlerOptions{Level: slog.LevelInfo})
 	}
 
-	return slog.New(slogHandler), nil
+	Logger = slog.New(slogHandler)
+
+	return nil
 }

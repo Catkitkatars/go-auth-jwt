@@ -9,21 +9,21 @@ import (
 )
 
 func main() {
-	cfg, cfgErr := config.Init()
+	cfgErr := config.Init()
 
 	if cfgErr != nil {
 		log.Fatalf("Error init cfg. Err: %e", cfgErr)
 		os.Exit(1)
 	}
 
-	logger, logErr := logs.Init(&cfg)
+	logErr := logs.Init(config.Cfg)
 
 	if logErr != nil {
 		log.Fatalf("Error init logger. Err: %e", logErr)
 		os.Exit(1)
 	}
 
-	logger.Info("starting auth-jwt", slog.String("env", cfg.AppEnv))
+	logs.Logger.Info("starting auth-jwt", slog.String("env", config.Cfg.AppEnv))
 
 	// Router - github.com/gin-gonic/gin
 

@@ -1,9 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
-	"log"
 )
 
 type Config struct {
@@ -21,21 +21,18 @@ type Config struct {
 	DBPassword   string `env:"DB_PASSWORD"`
 }
 
-func Init() (Config, error) {
+var Cfg *Config
+
+func Init() error {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Fatalf("Ошибка при загрузке .env файла: %v", err)
-		return Config{}, err
+		return fmt.Errorf("godotenv.Load: %w", err)
 	}
 
-	var cfg Config
-	errCfg := env.Parse(&cfg)
+	errCfg := env.Parse(&Cfg)
 
 	if errCfg != nil {
-		log.Fatalf("Не удалось проинициализировать .env, err: %e", errCfg)
-		return cfg, errCfg
+		return fmt.Errorf("env.Parse: %w", errCfg)
 	}
-
-	return cfg, nil
 }
