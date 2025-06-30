@@ -25,14 +25,15 @@ var Cfg *Config
 
 func Init() error {
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		return fmt.Errorf("godotenv.Load: %w", err)
 	}
 
-	errCfg := env.Parse(&Cfg)
+	Cfg = &Config{}
 
-	if errCfg != nil {
-		return fmt.Errorf("env.Parse: %w", errCfg)
+	if err := env.Parse(Cfg); err != nil {
+		return fmt.Errorf("env.Parse: %w", err)
 	}
+
+	return nil
 }

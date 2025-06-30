@@ -14,10 +14,13 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     postgresql-client && \
     rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /auth-jwt/logs
+    mkdir -p /auth-jwt/logs \
+    && mkdir -p /auth-jwt/migrations
 
 COPY --from=build /src/auth-jwt /auth-jwt
 COPY --from=build /src/.env /auth-jwt/.env
+
+COPY internal/store/migrations /auth-jwt/migrations
 
 EXPOSE 8080
 ENTRYPOINT ["./auth-jwt"]
