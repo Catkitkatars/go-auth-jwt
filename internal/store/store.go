@@ -1,6 +1,7 @@
 package store
 
 import (
+	"authjwt/internal/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -11,34 +12,40 @@ import (
 )
 
 var DB *sql.DB
+var Migrate *migrate.Migrate
 
-func InitDB(dsn string, dbType string) error {
-	db, err := sql.Open(dbType, dsn)
+func InitDB() error {
+	dsn := createDsn(config.Cfg)
+
+	db, err := sql.Open(config.Cfg.DBConnection, dsn)
 	if err != nil {
-		return err
+		return fmt.Errorf("sql.Open failed: %w", err)
 	}
 
 	if err := db.Ping(); err != nil {
-		return err
+		return fmt.Errorf("db.Ping failed: %w", err)
 	}
 
 	DB = db
-	return nil
-}
 
-func RunMigrate(dsn string) error {
-	m, err := migrate.New(
+	Migrate, err = migrate.New(
 		"file://migrations",
 		dsn,
 	)
-
 	if err != nil {
-		return fmt.Errorf("error creating migrate instance: %w", err)
-	}
-
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		return fmt.Errorf("error applying migrations: %w", err)
+		return fmt.Errorf("failed to init migrate: %w", err)
 	}
 
 	return nil
+}
+
+func createDsn(cfg *config.Config) string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		cfg.DBUsername,
+		cfg.DBPassword,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBDatabase,
+	)
 }
