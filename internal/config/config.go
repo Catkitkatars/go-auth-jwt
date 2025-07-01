@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
+	"time"
 )
 
 type Config struct {
-	AppName    string `env:"APP_NAME"`
-	AppEnv     string `env:"APP_ENV"`
-	AppHost    string `env:"APP_HOST"`
-	AppPort    int    `env:"APP_PORT"`
-	AppLogPath string `env:"APP_LOG_PATH"`
+	AppName        string        `env:"APP_NAME"`
+	AppEnv         string        `env:"APP_ENV"`
+	AppHost        string        `env:"APP_HOST"`
+	AppPort        int           `env:"APP_PORT"`
+	AppLogPath     string        `env:"APP_LOG_PATH"`
+	AppTimeout     time.Duration `env:"APP_TIMEOUT"`
+	AppIdleTimeout time.Duration `env:"APP_IDLE_TIMEOUT"`
 
 	DBConnection string `env:"DB_CONNECTION"`
 	DBHost       string `env:"DB_HOST"`

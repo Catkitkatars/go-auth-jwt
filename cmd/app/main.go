@@ -2,6 +2,7 @@ package main
 
 import (
 	"authjwt/internal/config"
+	"authjwt/internal/http"
 	logs "authjwt/internal/logger"
 	"authjwt/internal/store"
 	"log"
@@ -13,14 +14,14 @@ func main() {
 	cfgErr := config.Init()
 
 	if cfgErr != nil {
-		log.Fatalf("Error init cfg. Err: %e", cfgErr)
+		log.Fatalf("Error init cfg. Err: %v", cfgErr)
 		os.Exit(1)
 	}
 
 	logErr := logs.Init(config.Cfg)
 
 	if logErr != nil {
-		log.Fatalf("Error init logger. Err: %e", logErr)
+		log.Fatalf("Error init logger. Err: %v", logErr)
 		os.Exit(1)
 	}
 
@@ -36,13 +37,16 @@ func main() {
 	errMigrate := store.Migrate.Up()
 
 	if errMigrate != nil {
-		log.Fatalf("store.Migrate.Up: %e", errMigrate)
-		os.Exit(1)
+		if errMigrate.Error() != "no change" {
+			log.Fatalf("store.Migrate.Up: %v", errMigrate)
+			os.Exit(1)
+		}
 	}
 
-	// Router - github.com/julienschmidt/httprouter
+	srvErr := http.ServerStart()
 
-	// Orm - gorm.io/gorm - router and orm too big for my project, but I want to try it
-
-	// Middleware - github.com/go-chi/jwtauth
+	if srvErr != nil {
+		log.Fatalf("http.ServerStart: %v", srvErr)
+		os.Exit(1)
+	}
 }
