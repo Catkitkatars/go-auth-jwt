@@ -7,14 +7,16 @@ RUN --mount=type=cache,target="/root/.cache/go-build" \
     --mount=type=cache,target="/go/pkg/mod" \
     CGO_ENABLED=1 go build -o auth-jwt cmd/app/main.go
 
-FROM ubuntu:22.04
+FROM alpine:3.20
+
 WORKDIR /auth-jwt
 
-RUN apt-get update && apt-get install -y \
-    default-mysql-client \
-    postgresql-client && \
-    rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /auth-jwt/logs \
+RUN apk add --no-cache \
+    mysql-client \
+    postgresql-client \
+    ca-certificates \
+    libc6-compat \
+    && mkdir -p /auth-jwt/logs \
     && mkdir -p /auth-jwt/migrations
 
 COPY --from=build /src/auth-jwt /auth-jwt
