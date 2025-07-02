@@ -23,6 +23,6 @@ func InitRouter() *httprouter.Router {
 			r.POST(route.Path, route.Handler)
 		}
 	}
-	
+
 	return r
 }
