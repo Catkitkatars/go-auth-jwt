@@ -26,3 +26,9 @@ func Wrap(handler Handler) httprouter.Handle {
 		}
 	}
 }
+
+func Unwrap(h func(http.ResponseWriter, *http.Request, httprouter.Params)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		h(w, r, nil)
+	}
+}
