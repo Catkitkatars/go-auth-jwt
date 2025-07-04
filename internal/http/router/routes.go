@@ -2,12 +2,12 @@ package router
 
 import (
 	"authjwt/internal/http/handlers"
-	"authjwt/internal/middleware"
+	"authjwt/internal/middlewares"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
-type Middleware func(httprouter.Handle) httprouter.Handle
+type Middleware func(handle httprouter.Handle) httprouter.Handle
 
 type Route struct {
 	Method      string
@@ -22,10 +22,15 @@ func GetRoutes() []Route {
 	return []Route{
 		{
 			Method:  "POST",
+			Path:    "/registration",
+			Handler: handlers.Wrap(ah.Registration),
+		},
+		{
+			Method:  "POST",
 			Path:    "/sayHello",
 			Handler: handlers.Wrap(ah.SayHello),
 			Middlewares: []Middleware{
-				middleware.AuthMiddleware,
+				middlewares.AuthMiddleware,
 			},
 		},
 	}
