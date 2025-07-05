@@ -16,6 +16,11 @@ type Config struct {
 	AppTimeout     time.Duration `env:"APP_TIMEOUT"`
 	AppIdleTimeout time.Duration `env:"APP_IDLE_TIMEOUT"`
 
+	JwtAccessTime    time.Duration `env:"JWT_ASC_TIME_LIFE"`
+	JwtRefreshTime   time.Duration `env:"JWT_RFS_TIME_LIFE"`
+	JwtAccessSecret  string        `env:"JWT_ACCESS_SECRET"`
+	JwtRefreshSecret string        `env:"JWT_REFRESH_SECRET"`
+
 	DBConnection string `env:"DB_CONNECTION"`
 	DBHost       string `env:"DB_HOST"`
 	DBPort       int    `env:"DB_PORT"`

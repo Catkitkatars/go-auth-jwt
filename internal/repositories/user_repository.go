@@ -26,14 +26,28 @@ func (r *UserRepo) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepo) GetByEmail(user *models.User) (*models.User, error) {
-	res, err := r.db.QueryRow(
-		"SELECT id, name, email, password FROM users WHERE email = $1",
-		user.Email,
+func (r *UserRepo) SaveTokenByUser(user *models.User, token string) (bool, error) {
+	_, err := r.db.Exec(
+		"UPDATE users SET refresh_token = $1 WHERE id = $2",
+		token, user.ID,
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("s.repo.Create: %v", err)
+		return false, fmt.Errorf("s.repo.SaveTokenByUser: %v", err)
 	}
-	return user, nil
+	return true, nil
+}
+
+func (r *UserRepo) GetByEmail(email string) (*models.User, error) {
+	userRepo := &models.User{}
+
+	err := r.db.QueryRow(
+		"SELECT id, name, email, password FROM users WHERE email = $1",
+		email,
+	).Scan(&userRepo.ID, &userRepo.Name, &userRepo.Email, &userRepo.Password)
+
+	if err != nil {
+		return nil, fmt.Errorf("s.repo.GetByEmail: %v", err)
+	}
+	return userRepo, nil
 }

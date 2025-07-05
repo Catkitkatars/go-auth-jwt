@@ -56,13 +56,13 @@ func (h AuthHandler) Login(r *http.Request) (any, error) {
 		Password: uDto.Password,
 	}
 
-	jwt, err := h.UserService.AuthUser()
+	jwt, err := h.UserService.AuthUser(&user)
 
 	if err != nil {
 		return nil, fmt.Errorf("h.Login.UserService.AuthUser: %v", err)
 	}
 
-	return map[string]bool{"success": true, "jwt": jwt}, nil
+	return jwt, nil
 }
 
 func (h AuthHandler) SayHello(r *http.Request) (any, error) {
