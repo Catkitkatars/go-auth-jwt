@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	logs "authjwt/internal/logger"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -14,6 +15,7 @@ func Wrap(handler Handler) httprouter.Handle {
 
 		rsBody, err := handler(req)
 		if err != nil {
+			logs.Logger.Error("Wrap: ", err)
 			res.WriteHeader(http.StatusBadRequest)
 			_ = json.NewEncoder(res).Encode(map[string]string{
 				"error": err.Error(),
@@ -24,11 +26,5 @@ func Wrap(handler Handler) httprouter.Handle {
 		if err := json.NewEncoder(res).Encode(rsBody); err != nil {
 			http.Error(res, "Failed to encode response", http.StatusInternalServerError)
 		}
-	}
-}
-
-func Unwrap(h func(http.ResponseWriter, *http.Request, httprouter.Params)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		h(w, r, nil)
 	}
 }

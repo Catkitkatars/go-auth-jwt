@@ -27,6 +27,11 @@ func GetRoutes() []Route {
 		},
 		{
 			Method:  "POST",
+			Path:    "/login",
+			Handler: handlers.Wrap(ah.Login),
+		},
+		{
+			Method:  "POST",
 			Path:    "/sayHello",
 			Handler: handlers.Wrap(ah.SayHello),
 			Middlewares: []Middleware{
