@@ -72,6 +72,9 @@ func (h AuthHandler) SayHello(r *http.Request) (any, error) {
 func (h AuthHandler) SayByeBye(r *http.Request) (any, error) {
 	return "Bye-Bye, from authJwt", nil
 }
+func (h AuthHandler) SaySomeThing(r *http.Request) (any, error) {
+	return "SomeThing, from authJwt", nil
+}
 
 func (h AuthHandler) toUserDto(r *http.Request) (*dto.UserDto, error) {
 	var uDto dto.UserDto

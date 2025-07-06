@@ -8,32 +8,40 @@ import (
 
 type Middleware func(handle http.HandlerFunc) http.HandlerFunc
 
+type Routable interface {
+	IsRoutable()
+}
 type Route struct {
 	Method      string
 	Prefix      string
 	Middlewares []Middleware
 	Handler     func(*http.Request) (any, error)
 }
+
+func (r Route) IsRoutable() {}
+
 type RouteGroup struct {
 	Method      string
 	Prefix      string
 	Middlewares []Middleware
-	Routes      []Route
+	Items       []Routable
 }
 
-func GetRouteGroups() []RouteGroup {
+func (g RouteGroup) IsRoutable() {}
+
+func GetRouteGroup() []RouteGroup {
 	ah := handlers.NewAuthHandler()
 
 	return []RouteGroup{
 		{
 			Method: "POST",
 			Prefix: "/auth",
-			Routes: []Route{
-				{
+			Items: []Routable{
+				&Route{
 					Prefix:  "/registration",
 					Handler: ah.Registration,
 				},
-				{
+				&Route{
 					Prefix:  "/login",
 					Handler: ah.Login,
 				},
@@ -44,14 +52,24 @@ func GetRouteGroups() []RouteGroup {
 			Middlewares: []Middleware{
 				middlewares.AuthMiddleware,
 			},
-			Routes: []Route{
-				{
+			Items: []Routable{
+				&Route{
 					Prefix:  "/sayHello",
 					Handler: ah.SayHello,
 				},
-				{
+				&Route{
 					Prefix:  "/sayByeBye",
 					Handler: ah.SayByeBye,
+				},
+				&RouteGroup{
+					Method: "POST",
+					Prefix: "/some",
+					Items: []Routable{
+						&Route{
+							Prefix:  "/saySomeThing",
+							Handler: ah.SaySomeThing,
+						},
+					},
 				},
 			},
 		},
