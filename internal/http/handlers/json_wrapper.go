@@ -3,14 +3,13 @@ package handlers
 import (
 	logs "authjwt/internal/logger"
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
 type Handler func(*http.Request) (any, error)
 
-func Wrap(handler Handler) httprouter.Handle {
-	return func(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func Wrap(handler Handler) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Content-Type", "application/json")
 
 		rsBody, err := handler(req)

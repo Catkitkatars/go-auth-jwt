@@ -3,39 +3,56 @@ package router
 import (
 	"authjwt/internal/http/handlers"
 	"authjwt/internal/middlewares"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
-type Middleware func(handle httprouter.Handle) httprouter.Handle
+type Middleware func(handle http.HandlerFunc) http.HandlerFunc
 
 type Route struct {
 	Method      string
-	Path        string
-	Handler     func(http.ResponseWriter, *http.Request, httprouter.Params)
+	Prefix      string
 	Middlewares []Middleware
+	Handler     func(*http.Request) (any, error)
+}
+type RouteGroup struct {
+	Method      string
+	Prefix      string
+	Middlewares []Middleware
+	Routes      []Route
 }
 
-func GetRoutes() []Route {
+func GetRouteGroups() []RouteGroup {
 	ah := handlers.NewAuthHandler()
 
-	return []Route{
+	return []RouteGroup{
 		{
-			Method:  "POST",
-			Path:    "/registration",
-			Handler: handlers.Wrap(ah.Registration),
+			Method: "POST",
+			Prefix: "/auth",
+			Routes: []Route{
+				{
+					Prefix:  "/registration",
+					Handler: ah.Registration,
+				},
+				{
+					Prefix:  "/login",
+					Handler: ah.Login,
+				},
+			},
 		},
 		{
-			Method:  "POST",
-			Path:    "/login",
-			Handler: handlers.Wrap(ah.Login),
-		},
-		{
-			Method:  "POST",
-			Path:    "/sayHello",
-			Handler: handlers.Wrap(ah.SayHello),
+			Method: "POST",
 			Middlewares: []Middleware{
 				middlewares.AuthMiddleware,
+			},
+			Routes: []Route{
+				{
+					Prefix:  "/sayHello",
+					Handler: ah.SayHello,
+				},
+				{
+					Prefix:  "/sayByeBye",
+					Handler: ah.SayByeBye,
+				},
 			},
 		},
 	}
