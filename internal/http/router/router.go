@@ -38,7 +38,7 @@ func eachRouteGroups(group *RouteGroup, parentPrefix string, parentMW []Middlewa
 					continue
 				}
 			}
-			middlewares := append(group.Middlewares, r.Middlewares...)
+			middlewares := append(mw, r.Middlewares...)
 			handler := eachMiddlewares(handlers.Wrap(r.Handler), middlewares...)
 			Router.Handler(method, path, handler)
 		case *RouteGroup:

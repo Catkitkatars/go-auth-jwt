@@ -66,16 +66,30 @@ func (h AuthHandler) Login(r *http.Request) (any, error) {
 }
 
 func (h AuthHandler) SayHello(r *http.Request) (any, error) {
-	return "Hi, from authJwt", nil
+	userID := r.Context().Value("userID")
+	message := fmt.Sprintf("Hi, userID - %v from authJwt", userID)
+
+	return map[string]string{
+		"message": message,
+	}, nil
 }
 
 func (h AuthHandler) SayByeBye(r *http.Request) (any, error) {
-	return "Bye-Bye, from authJwt", nil
+	userID := r.Context().Value("userID")
+	message := fmt.Sprintf("Bye-Bye, userID - %v from authJwt", userID)
+
+	return map[string]string{
+		"message": message,
+	}, nil
 }
 func (h AuthHandler) SaySomeThing(r *http.Request) (any, error) {
-	return "SomeThing, from authJwt", nil
-}
+	userID := r.Context().Value("userID")
+	message := fmt.Sprintf("SomeThing, userID - %v from authJwt", userID)
 
+	return map[string]string{
+		"message": message,
+	}, nil
+}
 func (h AuthHandler) toUserDto(r *http.Request) (*dto.UserDto, error) {
 	var uDto dto.UserDto
 
