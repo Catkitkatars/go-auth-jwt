@@ -29,11 +29,21 @@ type RouteGroup struct {
 
 func (g RouteGroup) IsRoutable() {}
 
-func GetRouteGroup() []RouteGroup {
+func GetRouteGroup() []Routable {
 	ah := handlers.NewAuthHandler()
 
-	return []RouteGroup{
-		{
+	return []Routable{
+		&Route{
+			Method: "POST",
+			Prefix: "/pressure",
+			Middlewares: []Middleware{
+				middlewares.AuthMiddleware,
+			},
+			Handler: func(r *http.Request) (any, error) {
+				return map[string]string{"ur-pressure": "120/70"}, nil
+			},
+		},
+		&RouteGroup{
 			Method: "POST",
 			Prefix: "/auth",
 			Items: []Routable{
@@ -47,7 +57,7 @@ func GetRouteGroup() []RouteGroup {
 				},
 			},
 		},
-		{
+		&RouteGroup{
 			Method: "POST",
 			Middlewares: []Middleware{
 				middlewares.AuthMiddleware,

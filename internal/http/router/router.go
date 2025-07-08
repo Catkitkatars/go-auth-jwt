@@ -12,37 +12,33 @@ var Router *httprouter.Router
 func InitRouter() *httprouter.Router {
 	Router = httprouter.New()
 
-	for _, group := range GetRouteGroup() {
-		eachRouteGroups(&group, "", nil)
-	}
+	eachRoutable(GetRouteGroup(), "", nil, "")
 
 	return Router
 }
 
-func eachRouteGroups(group *RouteGroup, parentPrefix string, parentMW []Middleware) {
-	prefix := parentPrefix + group.Prefix
-	mw := append(parentMW, group.Middlewares...)
-
-	for _, item := range group.Items {
+func eachRoutable(routable []Routable, parentPrefix string, parentMW []Middleware, method string) {
+	for _, item := range routable {
 		switch r := item.(type) {
 		case *Route:
 			if !checkEmptyDataRoute(*r) {
 				continue
 			}
-			path := prefix + r.Prefix
-			var method string
+			path := parentPrefix + r.Prefix
+			mt := r.Method
 			if r.Method == "" {
-				method = group.Method
+				mt = method
 				if method == "" {
 					log.Logger.Error("eachRouteGroups: Method is empty for route", path)
 					continue
 				}
 			}
-			middlewares := append(mw, r.Middlewares...)
+
+			middlewares := append(parentMW, r.Middlewares...)
 			handler := eachMiddlewares(handlers.Wrap(r.Handler), middlewares...)
-			Router.Handler(method, path, handler)
+			Router.Handler(mt, path, handler)
 		case *RouteGroup:
-			eachRouteGroups(r, prefix, mw)
+			eachRoutable(r.Items, parentPrefix+r.Prefix, append(parentMW, r.Middlewares...), r.Method)
 		}
 	}
 }
